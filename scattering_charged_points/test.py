@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import animation
 from scipy import constants
+import random
 
 # https://stackoverflow.com/questions/31303601/animate-a-python-pyplot-by-moving-a-point-plotted-via-scatter/38126963
 
@@ -15,8 +16,8 @@ class chargePoint:
     def __init__(self):
         self.q = constants.e
         self.m = constants.m_e
-        self.f = np.zeros((3,1))
-        self.p = np.zeros((3,1))
+        self.f = np.zeros((1,3))
+        self.p = np.zeros((1,3))
 
     def getCharge(self):
         return self.q
@@ -28,7 +29,7 @@ class chargePoint:
         self.f = F
 
     def getForce(self):
-        return f
+        return self.f
 
     def setPosition(pos):
         self.p = pos
@@ -62,9 +63,29 @@ print(getCoulombForce(charge_0_pos,
                       constants.e))
 
 
+# boundaries 
+x_min = -1
+y_min = -1
+z_min = -1
+x_max = 1
+y_max = 1
+z_max = 1
+
+
+print(random.uniform(x_min,x_max))
+
 charges = []
 
 for i in range(5):
     qt = chargePoint()
+    p_rand = [[random.uniform(x_min,x_max)],
+              [random.uniform(y_min,y_max)],
+              [random.uniform(z_min,z_max)]]
+    
+    print(p_rand)
+    
+    # TODO: initialize charge with random position within a given boundary
+    #qt.setPosition(p_rand)
+    
     charges.append(qt)
     print(charges[i].getMass())
