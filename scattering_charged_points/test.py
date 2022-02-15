@@ -9,6 +9,8 @@ import random
 
 # https://likegeeks.com/3d-plotting-in-python/
 
+
+
 class chargePoint:
     q = None
     m = None
@@ -22,9 +24,15 @@ class chargePoint:
 
     def getCharge(self):
         return self.q
-
+    
+    def setCharge(self, q):
+        self.q = q
+        
     def getMass(self):
         return self.m
+
+    def setMass(self,m):
+        self.m = m
 
     def applyForce(self,F):
         self.f = F
@@ -54,14 +62,48 @@ def getCoulombForce(pos_m,
     return k_e * q_m * q_n / r_mn_norm**2 * r_mnh
 
 
-charge_0_pos = np.array([[1],[1],[1]])
-charge_1_pos = np.array([[0.5],[0.5],[0.5]])
+def calcChargeForce(q0,q1):
+    k_e = 1 / (4*np.pi*constants.epsilon_0)
+    # calculate distance vector between the two charges
+    r_mn = q0.getPosition() - q1.getPosition()
+    r_mn_norm = np.linalg.norm(r_mn)
+    r_mnh = r_mn / r_mn_norm
+    return k_e * q0.getCharge() * q1.getCharge() / r_mn_norm**2 * r_mnh
 
+def showChargePositions(charge_list,index):
+    fig = plt.figure(index)
+    ax = fig.add_subplot(111, projection='3d')
+    
+    ax.set_xlim([-2,2])
+    ax.set_ylim([-2,2])
+    ax.set_zlim([-2,2])
+    
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    for i in range(len(charge_list)):
+        point = charges[i].getPosition()
+        ax.scatter(point[0],point[1],point[2])
+    plt.title(index)
+    plt.show()
+    
+def calcChargeForces(charge_list):
+    rr = range(len(charge_list))
+    for i in rr:
+        f = np.zeros((3,1))
+        for j in rr:
+            if(i != j):
+                f = f + calcChargeForce(charge_list[i],charge_list[j])
+        charge_list[i].applyForce(f)
 
-print(getCoulombForce(charge_0_pos,
-                      charge_1_pos,
-                      constants.e,
-                      constants.e))
+def updateChargepositions(charge_list, delta_t):
+    rr = range(len(charge_list))
+    for i in rr:
+        f = charge_list[i].getForce()
+        m = charge_list[i].getMass()
+        pos_now = charge_list[i].getPosition()
+        new_pos = pos_now + f / m * delta_t**2
+        charge_list[i].setPosition(new_pos)
 
 
 # boundaries 
@@ -76,15 +118,11 @@ charges = []
 
 fig = plt.figure(figsize=(4,4))
 
-ax = fig.add_subplot(111, projection='3d')
 
-def showPositions(charge_list):
-    for i in range(len(charge_list)):
-        point = charges[i].getPosition()
-        ax.scatter(point[0],point[1],point[2])
-    plt.show()
 
-for i in range(5):
+
+"""
+for i in range(10):
     qt = chargePoint()
     p_rand = [[random.uniform(x_min,x_max)],
               [random.uniform(y_min,y_max)],
@@ -92,12 +130,59 @@ for i in range(5):
     
     # TODO: initialize charge with random position within a given boundary
     qt.setPosition(np.array(p_rand))
+    qt.setMass(100)
     # append new charge to array
     charges.append(qt)
     #point = charges[i].getPosition()
     #ax.scatter(point[0],point[1],point[2])
 
-#plt.show()
+"""
 
-showPositions(charges)
+qt = chargePoint()
+p_rand = [[0.5],
+          [1],
+          [0.5]]
+
+# TODO: initialize charge with random position within a given boundary
+qt.setPosition(np.array(p_rand))
+qt.setMass(5*constants.m_e)
+qt.setCharge(2*constants.e)
+# append new charge to array
+charges.append(qt)
+
+qt = chargePoint()
+p_rand = [[-0.5],
+          [-0.5],
+          [-0.5]]
+
+# TODO: initialize charge with random position within a given boundary
+qt.setPosition(np.array(p_rand))
+qt.setMass(constants.m_e)
+qt.setCharge(-constants.e)
+# append new charge to array
+charges.append(qt)
+
+qt = chargePoint()
+p_rand = [[0.5],
+          [-1],
+          [-0.5]]
+
+# TODO: initialize charge with random position within a given boundary
+qt.setPosition(np.array(p_rand))
+qt.setMass(2*constants.m_e)
+qt.setCharge(-constants.e)
+# append new charge to array
+charges.append(qt)
+
+delta_t = 0.01
+
+
+fig_index = 0
+
+for i in range(100):
+    showChargePositions(charges,fig_index)
+    calcChargeForces(charges)
+    updateChargepositions(charges, delta_t)
+    fig_index = fig_index + 1
+
 
