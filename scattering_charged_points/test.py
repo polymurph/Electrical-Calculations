@@ -73,10 +73,10 @@ def calcChargeForce(q0,q1):
 def showChargePositions(charge_list,index):
     fig = plt.figure(index)
     ax = fig.add_subplot(111, projection='3d')
-    
-    ax.set_xlim([-2,2])
-    ax.set_ylim([-2,2])
-    ax.set_zlim([-2,2])
+    aa = 0.1
+    ax.set_xlim([-aa,aa])
+    ax.set_ylim([-aa,aa])
+    ax.set_zlim([-aa,aa])
     
     ax.set_xlabel('x')
     ax.set_ylabel('y')
@@ -84,6 +84,8 @@ def showChargePositions(charge_list,index):
     for i in range(len(charge_list)):
         point = charges[i].getPosition()
         ax.scatter(point[0],point[1],point[2])
+        p = charge_list[i].getPosition()
+        ax.text3D(p[0][0],p[1][0],p[2][0],i)
     plt.title(index)
     plt.show()
     
@@ -119,8 +121,6 @@ charges = []
 fig = plt.figure(figsize=(4,4))
 
 
-
-
 """
 for i in range(10):
     qt = chargePoint()
@@ -139,22 +139,10 @@ for i in range(10):
 """
 
 qt = chargePoint()
-p_rand = [[0.5],
+p_rand = np.array([[0.5],
           [1],
-          [0.5]]
-
-# TODO: initialize charge with random position within a given boundary
-qt.setPosition(np.array(p_rand))
-qt.setMass(5*constants.m_e)
-qt.setCharge(2*constants.e)
-# append new charge to array
-charges.append(qt)
-
-qt = chargePoint()
-p_rand = [[-0.5],
-          [-0.5],
-          [-0.5]]
-
+          [0.5]])
+p_rand = p_rand * 0.02
 # TODO: initialize charge with random position within a given boundary
 qt.setPosition(np.array(p_rand))
 qt.setMass(constants.m_e)
@@ -163,18 +151,30 @@ qt.setCharge(-constants.e)
 charges.append(qt)
 
 qt = chargePoint()
-p_rand = [[0.5],
-          [-1],
-          [-0.5]]
-
+p_rand = np.array([[-0.5],
+          [-1.5],
+          [-0.5]])
+p_rand = p_rand * 0.02
 # TODO: initialize charge with random position within a given boundary
 qt.setPosition(np.array(p_rand))
-qt.setMass(2*constants.m_e)
+qt.setMass(constants.m_e)
 qt.setCharge(-constants.e)
 # append new charge to array
 charges.append(qt)
 
-delta_t = 0.01
+qt = chargePoint()
+p_rand = np.array([[0.8],
+          [-1],
+          [-1.5]])
+p_rand = p_rand * 0.02
+# TODO: initialize charge with random position within a given boundary
+qt.setPosition(np.array(p_rand))
+qt.setMass(constants.m_e)
+qt.setCharge(-constants.e)
+# append new charge to array
+charges.append(qt)
+
+delta_t = 0.0001
 
 
 fig_index = 0
