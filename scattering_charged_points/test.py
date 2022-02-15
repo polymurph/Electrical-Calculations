@@ -1,4 +1,5 @@
 import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import pyplot as plt
 from matplotlib import animation
 from scipy import constants
@@ -6,7 +7,7 @@ import random
 
 # https://stackoverflow.com/questions/31303601/animate-a-python-pyplot-by-moving-a-point-plotted-via-scatter/38126963
 
-
+# https://likegeeks.com/3d-plotting-in-python/
 
 class chargePoint:
     q = None
@@ -17,7 +18,7 @@ class chargePoint:
         self.q = constants.e
         self.m = constants.m_e
         self.f = np.zeros((1,3))
-        self.p = np.zeros((1,3))
+        self.p = np.array(np.zeros((1,3)))
 
     def getCharge(self):
         return self.q
@@ -25,13 +26,13 @@ class chargePoint:
     def getMass(self):
         return self.m
 
-    def applyForce(F):
+    def applyForce(self,F):
         self.f = F
 
     def getForce(self):
         return self.f
 
-    def setPosition(pos):
+    def setPosition(self,pos):
         self.p = pos
 
     def getPosition(self):
@@ -53,8 +54,8 @@ def getCoulombForce(pos_m,
     return k_e * q_m * q_n / r_mn_norm**2 * r_mnh
 
 
-charge_0_pos = np.array([[1],[1]])
-charge_1_pos = np.array([[0.5],[0.5]])
+charge_0_pos = np.array([[1],[1],[1]])
+charge_1_pos = np.array([[0.5],[0.5],[0.5]])
 
 
 print(getCoulombForce(charge_0_pos,
@@ -71,10 +72,17 @@ x_max = 1
 y_max = 1
 z_max = 1
 
-
-print(random.uniform(x_min,x_max))
-
 charges = []
+
+fig = plt.figure(figsize=(4,4))
+
+ax = fig.add_subplot(111, projection='3d')
+
+def showPositions(charge_list):
+    for i in range(len(charge_list)):
+        point = charges[i].getPosition()
+        ax.scatter(point[0],point[1],point[2])
+    plt.show()
 
 for i in range(5):
     qt = chargePoint()
@@ -82,10 +90,14 @@ for i in range(5):
               [random.uniform(y_min,y_max)],
               [random.uniform(z_min,z_max)]]
     
-    print(p_rand)
-    
     # TODO: initialize charge with random position within a given boundary
-    #qt.setPosition(p_rand)
-    
+    qt.setPosition(np.array(p_rand))
+    # append new charge to array
     charges.append(qt)
-    print(charges[i].getMass())
+    #point = charges[i].getPosition()
+    #ax.scatter(point[0],point[1],point[2])
+
+#plt.show()
+
+showPositions(charges)
+
